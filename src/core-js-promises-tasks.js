@@ -56,8 +56,24 @@ function getPromiseResult(source) {
  * [Promise.resolve(1), Promise.reject(2), Promise.resolve(3)]  => Promise fulfilled with 1
  * [Promise.reject(1), Promise.reject(2), Promise.reject(3)]    => Promise rejected
  */
-function getFirstResolvedPromiseResult(/* promises */) {
-  throw new Error('Not implemented');
+function getFirstResolvedPromiseResult(promises) {
+  let count = 0;
+  return new Promise((resolve, reject) => {
+    if (!promises || promises.length === 0) {
+      reject(new Error('No promises exist'));
+      return;
+    }
+    promises.forEach((promise) => {
+      Promise.resolve(promise)
+        .then(resolve)
+        .catch(() => {
+          count += 1;
+          if (count === promises.length) {
+            reject(new Error('All promises rejected'));
+          }
+        });
+    });
+  });
 }
 
 /**
